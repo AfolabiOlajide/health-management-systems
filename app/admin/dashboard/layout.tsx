@@ -3,7 +3,7 @@ import "@/styles/globals.css";
 import GlobalFont from "@/components/GlobalFont";
 
 export const metadata: Metadata = {
-    title: "FHCM",
+    title: "FHCM | Admin Dashboard",
     description: "FUTA Health Care Management Systems",
 };
 
@@ -15,7 +15,9 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body>
-                <GlobalFont>{children}</GlobalFont>
+                <GlobalFont>
+                    {children}
+                </GlobalFont>
             </body>
         </html>
     );
