@@ -74,3 +74,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+.cont{
+  @apply w-[90%] md:w-[80%] lg:w-[70%] mx-auto
+}
+
+.trans{
+  @apply duration-300 ease-in-out transition-all
+}
+
+.shadowX{
+  box-shadow: 0 0 3rem rgba(48, 48, 48, 0.1);
+}

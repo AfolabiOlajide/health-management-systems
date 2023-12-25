@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
 import GlobalFont from "@/components/GlobalFont";
+import AdminHeader from "@/modules/AdminHeader";
 
 export const metadata: Metadata = {
     title: "FHCM | Admin Dashboard",
@@ -16,6 +17,7 @@ export default function RootLayout({
         <html lang="en">
             <body>
                 <GlobalFont>
+                    <AdminHeader />
                     {children}
                 </GlobalFont>
             </body>
