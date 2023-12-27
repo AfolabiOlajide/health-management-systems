@@ -15,7 +15,7 @@ const AdminHeader = () => {
                 {adminNavItems.map(item => {
                     return (
                         <Link key={item.id} href={item.link}>
-                            <div className={`text-white capitalize p-[1rem] rounded-md trans ${pathName === item.link && "bg-white text-[#285430]"}`}>{item.name}</div>
+                            <div className={`text-white capitalize p-[1rem] rounded-md ${pathName === item.link && "bg-white text-slate-900"}`}>{item.name}</div>
                         </Link>
                     )
                 })}

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
 
-const Student = ({
+const StudentDoctor = ({
     matricNo,
     name,
     id,
@@ -13,8 +13,8 @@ const Student = ({
     department: string
 }) => {
     return (
-        <Link href={`/admin/dashboard/records/${id}`}>
-            <div className="student shadowX p-[3rem] rounded-lg cursor-pointer hover:scale-105 trans">
+        <Link href={`/doctors/dashboard/records/${id}`}>
+            <div className="student shadowX p-[2rem] rounded-lg cursor-pointer hover:scale-105 trans">
                 <h3 className="text-[1.3rem]">
                     <span className="font-bold">Matric No:</span> 
                     <span className="uppercase">{matricNo}</span>
@@ -30,4 +30,4 @@ const Student = ({
     );
 };
 
-export default Student;
+export default StudentDoctor;

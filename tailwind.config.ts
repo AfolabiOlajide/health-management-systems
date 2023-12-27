@@ -22,7 +22,7 @@ const config = {
     extend: {
       colors: {
         main: "#285430",
-        lightMain: "#f4fff3",
+        lightMain: "#5f8d4e",
         dark: "#181c32",
         gray: "#c9c9c9",
         lightGray: "#fafafa",

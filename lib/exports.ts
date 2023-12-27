@@ -9,9 +9,22 @@ export const adminNavItems = [
         name: "add",
         link: "/admin/dashboard/add"
     },
+    // {
+    //     id: "jsbdaqefqecd",
+    //     name: "records",
+    //     link: "/admin/dashboard/records"
+    // },
+]
+
+export const doctorNavItems = [
     {
-        id: "jsbdaqefqecd",
-        name: "records",
-        link: "/admin/dashboard/records"
+        id: "jsbdhcd",
+        name: "dashboard",
+        link: "/admin/dashboard"
     },
+    // {
+    //     id: "jsbdaqefqecd",
+    //     name: "records",
+    //     link: "/admin/dashboard/records"
+    // },
 ]
