@@ -2,22 +2,31 @@
 import { useRef, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+import { signin } from "@/api/firebase"
 
-
+interface CustomError {
+    error: any
+}
 
 const AdminSignIn = () => {
+    const router = useRouter();
     const [ error, setError ] = useState<boolean>(false);
 
-    const emailRef = useRef<HTMLInputElement | null>(null);
-    const passwordRef = useRef<HTMLInputElement | null>(null);
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
 
     const handleSignIn = async ()=> {
-        // const result = await signIn("credentials", {
-        //     email: emailRef.current?.value,
-        //     password: passwordRef.current?.value,
-        //     redirect: true,
-        //     callbackUrl: "/app"
-        // })
+        const res = await signin(email, password);
+        if((res as CustomError).error){
+            setError(true)
+
+            setTimeout(() => {
+                setError(false)
+            }, 4000);
+        }else{
+            router.push('/admin/dashboard/')
+        }
     }
 
     return (
@@ -28,8 +37,8 @@ const AdminSignIn = () => {
                     <p>There was a problem signing you in, please try again with the right credentials.</p>
                 </div>
             }
-            <Input ref={emailRef} placeholder="Email" type="email" className="bg-transparent"/>
-            <Input ref={passwordRef}  placeholder="Password" type="password" className="bg-transparent" />
+            <Input onChange={(e) => setEmail(e.target.value)} placeholder="Email" type="email" className="bg-transparent"/>
+            <Input onChange={(e) => setPassword(e.target.value)}  placeholder="Password" type="password" className="bg-transparent" />
             <Button className="hover:text-white p-[2rem] bg-gray text-black rounded-md" onClick={handleSignIn}>
                 Sign in
             </Button>

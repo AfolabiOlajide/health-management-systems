@@ -20,7 +20,7 @@ export const doctorNavItems = [
     {
         id: "jsbdhcd",
         name: "dashboard",
-        link: "/admin/dashboard"
+        link: "/doctors/dashboard"
     },
     // {
     //     id: "jsbdaqefqecd",

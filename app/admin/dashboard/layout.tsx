@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { Toaster } from 'sonner'
 import "@/styles/globals.css";
 import GlobalFont from "@/components/GlobalFont";
 import AdminHeader from "@/modules/AdminHeader";
+import AuthContextProvider from "@/context/AuthContextProvider";
+import { AdminProtected } from "@/helpers/Protected";
 
 export const metadata: Metadata = {
     title: "FHCM | Admin Dashboard",
@@ -15,10 +18,16 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body>
+            <body className="pb-[3rem]">
+                <div id="modal_portal" className="relative z-[99999]"></div>
                 <GlobalFont>
-                    <AdminHeader />
-                    {children}
+                    <Toaster position="top-center" richColors/>
+                    <AuthContextProvider>
+                        <AdminProtected>
+                            <AdminHeader />
+                            {children}
+                        </AdminProtected>
+                    </AuthContextProvider>
                 </GlobalFont>
             </body>
         </html>

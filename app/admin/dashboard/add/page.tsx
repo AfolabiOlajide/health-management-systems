@@ -17,11 +17,11 @@ const Add = () => {
     return (
         <main className="cont my-[3rem]">
             <nav className="nav flex gap-[1.5rem] items-center">
-                <div className={`students ${active === "student" ? "bg-lightMain text-white" : "text-[#000]"} p-[.5rem] rounded-md cursor-pointer`} onClick={() => handleSetActive("student")}>Add Student</div>
+                <div className={`students text-[.8rem] md:text-base ${active === "student" ? "bg-lightMain text-white" : "text-[#000]"} p-[.5rem] rounded-md cursor-pointer`} onClick={() => handleSetActive("student")}>Add Student</div>
 
-                <div className={`students ${active === "doctor" ? "bg-lightMain text-white" : "text-[#000]"} p-[.5rem] rounded-md cursor-pointer`} onClick={() => handleSetActive("doctor")}>Add Doctor</div>
+                <div className={`students text-[.8rem] md:text-base ${active === "doctor" ? "bg-lightMain text-white" : "text-[#000]"} p-[.5rem] rounded-md cursor-pointer`} onClick={() => handleSetActive("doctor")}>Add Doctor</div>
 
-                <div className={`students ${active === "admin" ? "bg-lightMain text-white" : "text-[#000]"} p-[.5rem] rounded-md cursor-pointer`} onClick={() => handleSetActive("admin")}>Add Admin</div>
+                <div className={`students text-[.8rem] md:text-base ${active === "admin" ? "bg-lightMain text-white" : "text-[#000]"} p-[.5rem] rounded-md cursor-pointer`} onClick={() => handleSetActive("admin")}>Add Admin</div>
             </nav>
 
             {/* add student */}

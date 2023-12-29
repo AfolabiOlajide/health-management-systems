@@ -297,7 +297,7 @@ export const startStudentRecord = async(id: string) => {
     }
 }
 
-// end student record
+// end student record (change status)
 export const endStudentRecord = async(id: string) => {
     try {
         const Ref = doc(db, "students", id);

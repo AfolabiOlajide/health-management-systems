@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,9 +16,11 @@ import {
     getSingleStudent,
     startStudentRecord,
     updateDoctorRecords,
+    updateDoctorStatement,
     updateRecordAdmin,
 } from "@/api/firebase";
 import DoctorContext from "@/context/DoctorContext";
+import Loading from "@/modules/modals/Loading";
 
 const Record = ({ params }: { params: { id: string } }) => {
     const { user } = useContext(DoctorContext);
@@ -25,11 +28,17 @@ const Record = ({ params }: { params: { id: string } }) => {
     const [data, setData] = useState<singleStudentData>();
     const [doctors, setDoctors] = useState<DoctorType[]>([]);
     const [isDisabled, setIsDisabled] = useState<boolean>(false);
+    const [doctorStatement, setDoctorStatement] = useState<string>("");
+    const [temp, setTemp] = useState<string>("");
+    const [blood, setBlood] = useState<string>("");
     const [doc, setDoc] = useState("");
     const [status, setStatus] = useState<"ongoing" | "not-started" | "ended">(
         "not-started"
     );
     
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [change, setChange] = useState<number>(0)
+
     // function to format class based on status
     const getStatusClass = (status: string | undefined) => {
         return status === "ongoing"
@@ -41,23 +50,31 @@ const Record = ({ params }: { params: { id: string } }) => {
             : null;
     };
 
-
     // Use Effect fetches Students data and Doctors Data
     useEffect(() => {
         async function getStudentData() {
             const data = await getSingleStudent(params.id);
             // console.log(data);
             setData(data as singleStudentData);
-            // if((data as singleStudentData).record.temprature.length > 0){
-            //     setIsDisabled(true)
-            //     setTemp((data as singleStudentData).record.temprature);
-            //     setBlood((data as singleStudentData).record.bloodPressure);
-            // }else{
-            //     setIsDisabled(false)
-            // }
-            
+            if ((data as singleStudentData).record.doctorStatement.length > 0) {
+                setIsDisabled(true);
+                setDoctorStatement(
+                    (data as singleStudentData).record.doctorStatement
+                );
+            } else {
+                setIsDisabled(false);
+            }
+
+            setTemp((data as singleStudentData).record.temprature);
+            setBlood((data as singleStudentData).record.bloodPressure);
             setDoc((data as singleStudentData).record.assignedDoctor);
-            setStatus((data as singleStudentData).record.status as "ongoing" | "not-started" | "ended")
+            setStatus(
+                (data as singleStudentData).record.status as
+                    | "ongoing"
+                    | "not-started"
+                    | "ended"
+            );
+            setIsLoading(false)
         }
 
         async function getDoctors() {
@@ -68,60 +85,72 @@ const Record = ({ params }: { params: { id: string } }) => {
 
         getStudentData();
         getDoctors();
-    }, []);
+    }, [change]);
 
     // function to get Doctors ID
-    const getDoctorId = (doc: string) => {
-        return doctors.filter(doctor => doctor.name === doc)[0].id;
-    }
+    const getDoctorId = () => {
+        return doctors.filter((doctor) => doctor.uid === user?.uid)[0].id;
+    };
 
     // save doctors statement
-    const save = () => {
-        setIsDisabled(true)
-    }
+    const save = async () => {
+        setIsDisabled(true);
+        try {
+            await updateDoctorStatement(params.id, doctorStatement);
+            toast.success("Updated Successfully");
+            console.log("Updated Successfully");
+        } catch (error) {
+            console.log(error);
+            toast.error("There Was an error try again");
+        }
+    };
 
     // Update Record Visibility
     const updateRecord = () => {
         setIsDisabled(false);
     };
 
-
     // start Record
     const startRecord = async () => {
         try {
             await startStudentRecord(params.id);
             console.log("Updated Successfully");
-            location.reload()
+            setChange(prev => prev + 1)
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     // end record
     const endRecord = async () => {
         try {
+            // end student record change status
             await endStudentRecord(params.id);
-            console.log("Ended Successfully");
-            // remove record from doctor
-            await DeleteRecordsDoctor(getDoctorId(user?.uid), params.id);
+            toast.success("Students Status Changed");
             // remove doctor from students data
             await assignDoctor(params.id, "");
-            location.reload()
+            toast.success("Ended Successfully");
+            setChange(prev => prev + 1)
         } catch (error) {
             console.log(error);
+            toast.error("There Was an error try again");
         }
-    }
+    };
+
 
     // Delete student record
     const deleteRecord = async () => {
         try {
             await clearStudentRecord(params.id);
-            console.log("Cleared Successfully");
-            router.push("/doctors/dashboard/")
+            console.log("Deleted Successfully");
+            // remove record from doctor
+            await DeleteRecordsDoctor(getDoctorId(), params.id);
+            toast.success("Cleared Successfully");
+            router.push("/doctors/dashboard/");
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     return (
         <main className="cont my-[3rem]">
@@ -155,12 +184,42 @@ const Record = ({ params }: { params: { id: string } }) => {
                 </div>
             </div>
 
+            {/* records */}
+            <div className="record-form my-[3rem] flex gap-[3rem]">
+                <div className="form-contol">
+                    <h5 className="font-semibold">Temprature</h5>
+                    <Input
+                        value={temp}
+                        type="number"
+                        placeholder="temp"
+                        disabled
+                        className="border-gray"
+                    />
+                </div>
+                <div className="form-contol">
+                    <h5 className="font-semibold">Blood Pressure</h5>
+                    <Input
+                        value={blood}
+                        type="number"
+                        placeholder="temp"
+                        disabled
+                        className="border-gray"
+                    />
+                </div>
+            </div>
 
             {/* doctor record */}
             <div className="doctor-record my-[3rem]">
                 <div className="form-control">
                     <h5 className="font-semibold">Doctor's Statement</h5>
-                    <Textarea disabled={isDisabled} placeholder="Enter Statement" rows={7} className="border-gray"/>
+                    <Textarea
+                        value={doctorStatement}
+                        onChange={(e) => setDoctorStatement(e.target.value)}
+                        disabled={isDisabled}
+                        placeholder="Enter Statement"
+                        rows={7}
+                        className="border-gray"
+                    />
                 </div>
             </div>
 
@@ -170,38 +229,49 @@ const Record = ({ params }: { params: { id: string } }) => {
             </div>
 
             {/* Drug Prescripton */}
-            <div className="doctor-record mb-[3rem]">
+            {/* <div className="doctor-record mb-[3rem]">
                 <div className="form-control">
                     <h5 className="font-semibold">Drug Prescription</h5>
-                    <Textarea placeholder="Enter prescription" rows={7} className="border-gray"/>
+                    <Textarea
+                        placeholder="Enter prescription"
+                        rows={7}
+                        className="border-gray"
+                    />
                 </div>
-            </div>
+            </div> */}
 
             <div className="cta flex gap-[2rem]">
                 {/* start record button */}
-                { status === "not-started" && <Button
-                    onClick={startRecord}
-                    className="block mt-[3rem] bg-main hover:bg-main"
-                >
-                    Start Record
-                </Button>}
+                {status === "not-started" && (
+                    <Button
+                        onClick={startRecord}
+                        className="block mt-[3rem] bg-main hover:bg-main"
+                    >
+                        Start Record
+                    </Button>
+                )}
 
                 {/* end record button */}
-                { status === "ongoing" && <Button
-                    onClick={endRecord}
-                    className="block mt-[3rem] bg-red-800 hover:bg-red-400"
-                >
-                    End Record
-                </Button>}
+                {status === "ongoing" && (
+                    <Button
+                        onClick={endRecord}
+                        className="block mt-[3rem] bg-red-800 hover:bg-red-400"
+                    >
+                        End Record
+                    </Button>
+                )}
 
                 {/* end record button */}
-                { status === "ended" && <Button
-                    onClick={deleteRecord}
-                    className="block mt-[3rem] bg-red-800 hover:bg-red-400"
-                >
-                    Delete Record
-                </Button>}
+                {status === "ended" && (
+                    <Button
+                        onClick={deleteRecord}
+                        className="block mt-[3rem] bg-red-800 hover:bg-red-400"
+                    >
+                        Delete Record
+                    </Button>
+                )}
             </div>
+            <Loading isOpen={isLoading}/>
         </main>
     );
 };

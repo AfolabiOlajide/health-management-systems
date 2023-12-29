@@ -6,15 +6,20 @@ import Student from "@/modules/students/Student";
 import React from "react";
 import { getAllStudents } from "@/api/firebase";
 import Link from "next/link";
+import Loading from "@/modules/modals/Loading";
+import { DNA } from "react-loader-spinner";
 
 const AdminDashboard = () => {
     const [students, setStudents] = useState<studentType[]>([]);
     const [search, setSearch] = useState<string>("");
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
+        setIsLoading(true);
         const fetchStudents = async () => {
             const res = await getAllStudents();
             if (search.length === 0) {
+                setIsLoading(false);
                 setStudents(res as studentType[]);
                 return;
             }
@@ -23,6 +28,7 @@ const AdminDashboard = () => {
                 student.matricNo.toLowerCase().includes(search.toLowerCase())
             );
             setStudents(filter);
+            setIsLoading(false);
         };
 
         fetchStudents();
@@ -51,21 +57,23 @@ const AdminDashboard = () => {
                 </Button>
             </div>
 
+            <h3 className="mb-[2rem] font-bold mt-[3rem] text-[1rem] md:text-[1.2rem] lg:text-[1.5rem]">
+                Student Records
+            </h3>
+
             {/* student found */}
-            {students.length === 0 && (
+            {students.length === 0 && !isLoading && (
                 <div className="not-found">
-                    <p className="mt-[3rem] font-bold">No student found</p>
+                    <p className="mt-[2rem] font-bold">No student found</p>
                     <Link href={`/admin/dashboard/add`}>
-                        <Button
-                            className="bg-dark hover:bg-dark/70"
-                        >
+                        <Button className="bg-dark hover:bg-dark/70">
                             Add Student
                         </Button>
                     </Link>
                 </div>
             )}
-            {students.length > 0 && (
-                <div className="students mt-[4rem] grid grid-cols-3 gap-[1.3rem]">
+            {students.length > 0 && !isLoading && (
+                <div className="students mt-[2rem] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[1.3rem]">
                     {students.map((student) => {
                         return (
                             <Student
@@ -79,6 +87,17 @@ const AdminDashboard = () => {
                     })}
                 </div>
             )}
+            {/* <Loading isOpen={isLoading}/> */}
+            <div className="flex items-center justify-center">
+            <DNA
+                visible={isLoading}
+                height="350"
+                width="350"
+                ariaLabel="dna-loading"
+                wrapperStyle={{}}
+                wrapperClass="dna-wrapper"
+            />
+            </div>
         </main>
     );
 };

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Toaster } from "sonner";
 import "@/styles/globals.css";
 import GlobalFont from "@/components/GlobalFont";
 import DoctorHeader from "@/modules/doctor/DoctorHeader";
@@ -17,8 +18,10 @@ export default function DoctorsDashboardLayout({
 }) {
     return (
         <html lang="en">
-            <body>
+            <body className="mb-[3rem]">
+                <div id="modal_portal" className="relative z-[99999]"></div>
                 <GlobalFont>
+                    <Toaster position="top-center" richColors />
                     <DoctorContextProvider>
                         <DoctorProtected>
                             <DoctorHeader />

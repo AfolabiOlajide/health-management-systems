@@ -15,14 +15,14 @@ const Student = ({
     return (
         <Link href={`/admin/dashboard/records/${id}`}>
             <div className="student shadowX p-[3rem] rounded-lg cursor-pointer hover:scale-105 trans">
-                <h3 className="text-[1.3rem]">
+                <h3 className="text-[.7rem] md:text-[1.rem] lg:text-[1.3rem]">
                     <span className="font-bold">Matric No:</span> 
                     <span className="uppercase">{matricNo}</span>
                 </h3>
-                <h3 className="text-[1.3rem]">
+                <h3 className="text-[.7rem] md:text-[1.rem] lg:text-[1.3rem]">
                     <span className="font-bold">Name:</span> {name}
                 </h3>
-                <h3 className="text-[1.3rem]">
+                <h3 className="text-[.7rem] md:text-[1.rem] lg:text-[1.3rem]">
                     <span className="font-bold">Department:</span> {department}
                 </h3>
             </div>

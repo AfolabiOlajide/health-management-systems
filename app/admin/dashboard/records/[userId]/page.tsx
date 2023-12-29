@@ -26,6 +26,8 @@ import {
     updateDoctorRecords,
     updateRecordAdmin,
 } from "@/api/firebase";
+import { toast } from "sonner";
+import Loading from "@/modules/modals/Loading";
 
 const Record = ({ params }: { params: { userId: string } }) => {
     const router = useRouter();
@@ -40,7 +42,11 @@ const Record = ({ params }: { params: { userId: string } }) => {
     const [status, setStatus] = useState<"ongoing" | "not-started" | "ended">(
         "not-started"
     );
-    
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+
+    const [change, setChange] = useState<number>(0)
+
     // function to format class based on status
     const getStatusClass = (status: string | undefined) => {
         return status === "ongoing"
@@ -52,24 +58,29 @@ const Record = ({ params }: { params: { userId: string } }) => {
             : null;
     };
 
-
     // Use Effect fetches Students data and Doctors Data
     useEffect(() => {
         async function getStudentData() {
             const data = await getSingleStudent(params.userId);
             // console.log(data);
             setData(data as singleStudentData);
-            if((data as singleStudentData).record.temprature.length > 0){
-                setIsDisabled(true)
+            if ((data as singleStudentData).record.temprature.length > 0) {
+                setIsDisabled(true);
                 setTemp((data as singleStudentData).record.temprature);
                 setBlood((data as singleStudentData).record.bloodPressure);
-            }else{
-                setIsDisabled(false)
+            } else {
+                setIsDisabled(false);
             }
-            
+
             setDoc((data as singleStudentData).record.assignedDoctor);
             setAssignedDoc((data as singleStudentData).record.assignedDoctor);
-            setStatus((data as singleStudentData).record.status as "ongoing" | "not-started" | "ended")
+            setStatus(
+                (data as singleStudentData).record.status as
+                    | "ongoing"
+                    | "not-started"
+                    | "ended"
+            );
+            setIsLoading(false)
         }
 
         async function getDoctors() {
@@ -80,18 +91,19 @@ const Record = ({ params }: { params: { userId: string } }) => {
 
         getStudentData();
         getDoctors();
-    }, []);
+    }, [change]);
 
     // function to get Doctors ID
     const getDoctorId = (doc: string) => {
-        return doctors.filter(doctor => doctor.name === doc)[0].id;
-    }
+        return doctors.filter((doctor) => doctor.name === doc)[0].id;
+    };
 
     // save temprature and blood pressure data
     const save = async () => {
         setIsDisabled(true);
         try {
             await updateRecordAdmin(params.userId, temp, blood);
+            toast.success("Updated Successfully");
             console.log("Updated Successfully");
         } catch (error) {
             console.log(error);
@@ -101,19 +113,25 @@ const Record = ({ params }: { params: { userId: string } }) => {
     // Assign/Update Doctor to student
     const saveDoctor = async () => {
         try {
-            if(assignedDoc === ""){
+            if (assignedDoc === "") {
                 await assignDoctor(params.userId, doc);
-                await updateDoctorRecords(getDoctorId(doc), params.userId)
+                await updateDoctorRecords(getDoctorId(doc), params.userId);
+                toast.success("Assign Doctor Successfully");
                 console.log("Saved Doctor Successfully");
-            }else{
-                await DeleteRecordsDoctor(getDoctorId(assignedDoc), params.userId);
+            } else {
+                await DeleteRecordsDoctor(
+                    getDoctorId(assignedDoc),
+                    params.userId
+                );
                 await assignDoctor(params.userId, doc);
-                await updateDoctorRecords(getDoctorId(doc), params.userId)
+                await updateDoctorRecords(getDoctorId(doc), params.userId);
+                toast.success("Updated Doctor Successfully");
                 console.log("Updated Doctor Successfully");
             }
-            location.reload()
+            setChange(prev => prev + 1)
         } catch (error) {
             console.log(error);
+            toast.error("An error ocurred try again.");
         }
     };
 
@@ -122,17 +140,16 @@ const Record = ({ params }: { params: { userId: string } }) => {
         setIsDisabled(false);
     };
 
-
     // start Record
     const startRecord = async () => {
         try {
             await startStudentRecord(params.userId);
             console.log("Updated Successfully");
-            location.reload()
+            setChange(prev => prev + 1)
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     // end record
     const endRecord = async () => {
@@ -142,22 +159,22 @@ const Record = ({ params }: { params: { userId: string } }) => {
             // remove record from doctor
             await DeleteRecordsDoctor(getDoctorId(assignedDoc), params.userId);
             await assignDoctor(params.userId, "");
-            location.reload()
+            setChange(prev => prev + 1)
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     // Delete student record
     const deleteRecord = async () => {
         try {
             await clearStudentRecord(params.userId);
             console.log("Cleared Successfully");
-            router.push("/admin/dashboard/")
+            router.push("/admin/dashboard/");
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     // Delete Student
     const deleteStudent = async () => {
@@ -173,19 +190,19 @@ const Record = ({ params }: { params: { userId: string } }) => {
         <main className="cont my-[3rem]">
             {/* data */}
             <div className="data">
-                <div className="name flex gap-3">
+                <div className="name flex gap-3 text-[.8rem] md:text-base">
                     <h1 className="font-bold">Record ID: </h1>
                     <span>{params.userId}</span>
                 </div>
-                <div className="name flex gap-3">
+                <div className="name flex gap-3 text-[.8rem] md:text-base">
                     <h1 className="font-bold">Name: </h1>
                     <span>{data?.name}</span>
                 </div>
-                <div className="name flex gap-3">
+                <div className="name flex gap-3 text-[.8rem] md:text-base">
                     <h1 className="font-bold">Matric No: </h1>
                     <span className="uppercase">{data?.matricNo}</span>
                 </div>
-                <div className="name flex gap-3">
+                <div className="name flex gap-3 text-[.8rem] md:text-base">
                     <h1 className="font-bold">Level: </h1>
                     <span>{data?.level}</span>
                 </div>
@@ -291,28 +308,34 @@ const Record = ({ params }: { params: { userId: string } }) => {
 
             <div className="cta flex gap-[2rem]">
                 {/* start record button */}
-                { status === "not-started" && <Button
-                    onClick={startRecord}
-                    className="block mt-[3rem] bg-main hover:bg-main"
-                >
-                    Start Record
-                </Button>}
+                {status === "not-started" && (
+                    <Button
+                        onClick={startRecord}
+                        className="block mt-[3rem] bg-main hover:bg-main"
+                    >
+                        Start Record
+                    </Button>
+                )}
 
                 {/* end record button */}
-                { status === "ongoing" && <Button
-                    onClick={endRecord}
-                    className="block mt-[3rem] bg-red-800 hover:bg-red-400"
-                >
-                    End Record
-                </Button>}
+                {status === "ongoing" && (
+                    <Button
+                        onClick={endRecord}
+                        className="block mt-[3rem] bg-red-800 hover:bg-red-400"
+                    >
+                        End Record
+                    </Button>
+                )}
 
                 {/* end record button */}
-                { status === "ended" && <Button
-                    onClick={deleteRecord}
-                    className="block mt-[3rem] bg-red-800 hover:bg-red-400"
-                >
-                    Delete Record
-                </Button>}
+                {status === "ended" && (
+                    <Button
+                        onClick={deleteRecord}
+                        className="block mt-[3rem] bg-red-800 hover:bg-red-400"
+                    >
+                        Delete Record
+                    </Button>
+                )}
 
                 <Button
                     onClick={deleteStudent}
@@ -321,6 +344,7 @@ const Record = ({ params }: { params: { userId: string } }) => {
                     Delete Student
                 </Button>
             </div>
+            <Loading isOpen={isLoading}/>
         </main>
     );
 };

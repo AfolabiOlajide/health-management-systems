@@ -32,9 +32,9 @@ const DoctorHeader = () => {
                         return (
                             <Link key={item.id} href={item.link}>
                                 <div
-                                    className={`text-white capitalize p-[1rem] rounded-md ${
+                                    className={`text-white capitalize p-[1rem] ${
                                         pathName === item.link &&
-                                        "bg-white text-slate-900"
+                                        "border-b border-white"
                                     }`}
                                 >
                                     {item.name}

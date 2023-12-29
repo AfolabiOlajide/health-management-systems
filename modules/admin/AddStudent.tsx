@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
@@ -19,10 +20,16 @@ const AddStudent = () => {
     const [name, setName] = useState<string>("");
     const [error, seterror] = useState("");
 
+    const required = name.length > 5 && matric.length > 10 && department.length > 10 && level.length > 0;
+
     const handleAddStudent = async (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.preventDefault();
+        if(!required){
+            toast.warning("Enter All required Fields")
+            return
+        }
         setDepartment("")
         setLevel("")
         setMatric("")
@@ -30,14 +37,15 @@ const AddStudent = () => {
         const res = await addStudent(name, matric, department, level);
         if ((res as CustomError).error) {
             seterror("Error Adding Students");
+            toast.error("Error Adding Student Try Again")
             console.log(res);
 
             setTimeout(() => {
                 seterror("");
             }, 4000);
         } else {
+            toast.success("Added Student Successfully")
             router.push('/admin/dashboard')
-            console.log("Added Student Successful");
             console.log((res as CustomError).error);
         }
     };
@@ -51,7 +59,7 @@ const AddStudent = () => {
             )}
 
             <div className="form-control w-full md:w-[60%] mb-[2rem]">
-                <h5 className="font-semibold">Name:</h5>
+                <h5 className="font-semibold">Name:<span className="text-red-700">*</span></h5>
                 <Input
                     placeholder="students name"
                     className="border-gray"
@@ -60,7 +68,7 @@ const AddStudent = () => {
                 />
             </div>
             <div className="form-control w-full md:w-[60%] mb-[2rem]">
-                <h5 className="font-semibold">Department:</h5>
+                <h5 className="font-semibold">Department:<span className="text-red-700">*</span></h5>
                 <Input
                     placeholder="students department"
                     className="border-gray"
@@ -69,7 +77,7 @@ const AddStudent = () => {
                 />
             </div>
             <div className="form-control w-full md:w-[60%] mb-[2rem]">
-                <h5 className="font-semibold">Matric No:</h5>
+                <h5 className="font-semibold">Matric No:<span className="text-red-700">*</span></h5>
                 <Input
                     placeholder="Matric number"
                     className="border-gray"
@@ -78,7 +86,7 @@ const AddStudent = () => {
                 />
             </div>
             <div className="form-control w-full md:w-[60%] mb-[2rem]">
-                <h5 className="font-semibold">Level:</h5>
+                <h5 className="font-semibold">Level:<span className="text-red-700">*</span></h5>
                 <Input
                     placeholder="students level"
                     className="border-gray"

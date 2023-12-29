@@ -9,12 +9,14 @@ import {
     getSingleStudent,
 } from "@/api/firebase";
 import StudentDoctor from "@/modules/students/StudentDoctor";
+import Loading from "@/modules/modals/Loading";
 
 const DoctorsDashboard = () => {
     const { user } = useContext(DoctorContext);
     const [doctors, setDoctors] = useState<DoctorType[]>();
     const [doctor, setDoctor] = useState<DoctorType>();
     const [allStudents, setAllStudents] = useState<studentType[]>();
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const [records, setRecords] = useState<studentType[]>();
 
@@ -42,6 +44,9 @@ const DoctorsDashboard = () => {
                 doctor?.assignedRecords?.includes(student.id)
             )
         );
+        const timeO = setTimeout(() => {
+            setIsLoading(false);
+        }, 3000)
     }, []);
 
     const filteredData = allStudents?.filter((student) =>
@@ -49,8 +54,6 @@ const DoctorsDashboard = () => {
             ?.filter((doctor) => doctor.uid === user?.uid)[0]
             ?.assignedRecords?.includes(student.id)
     );
-
-    console.log(filteredData);
 
     // const getRecords = async () => {
     //     for (let i = 0; i < (doctor?.assignedRecords?.length as number); i++) {
@@ -61,35 +64,40 @@ const DoctorsDashboard = () => {
     return (
         <div className="cont my-[3rem]">
             <header>
-                <div className="name text-[1.2rem] flex items-center gap-4">
+                <div className="name text-[.9rem] md:text-[1.2rem] flex items-center gap-4">
                     <h2 className="font-bold">Doctor Id:</h2>
                     <span>{filterDoctor()?.uid}</span>
                 </div>
-                <div className="name text-[1.2rem] flex items-center gap-4">
+                <div className="name text-[.9rem] md:text-[1.2rem] flex items-center gap-4">
                     <h2 className="font-bold">Name:</h2>
                     <span>{filterDoctor()?.name}</span>
                 </div>
 
                 {/* Assigned Records */}
                 <div className="assigned-records mt-[3rem]">
-                    <h3 className="text-[1.2rem] font-bold">
+                    <h3 className="text-[1rem] md:text-[1.2rem] font-bold">
                         Assigned Records
                     </h3>
 
-                    <div className="records mt-[1rem]">
+                    <div className="records mt-[1rem] flex flex-col gap-[2rem]">
                         {(filterDoctor()?.assignedRecords?.length as number) ===
                             0 && <p>No Records to show</p>}
 
-                        {
-                            filteredData?.map(data => {
-                                return (
-                                    <StudentDoctor department={data.department} matricNo={data.matricNo} name={data.name} key={data.id} id={data.id} />
-                                )
-                            })
-                        }
+                        {filteredData?.map((data) => {
+                            return (
+                                <StudentDoctor
+                                    department={data.department}
+                                    matricNo={data.matricNo}
+                                    name={data.name}
+                                    key={data.id}
+                                    id={data.id}
+                                />
+                            );
+                        })}
                     </div>
                 </div>
             </header>
+            <Loading isOpen={isLoading} />
         </div>
     );
 };

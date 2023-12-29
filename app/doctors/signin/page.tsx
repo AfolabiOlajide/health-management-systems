@@ -12,8 +12,6 @@ interface CustomError {
 }
 
 const DoctorsSignIn = () => {
-
-
     const router = useRouter();
     const [ error, setError ] = useState<boolean>(false);
 
