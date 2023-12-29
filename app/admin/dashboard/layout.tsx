@@ -7,7 +7,7 @@ import AuthContextProvider from "@/context/AuthContextProvider";
 import { AdminProtected } from "@/helpers/Protected";
 
 export const metadata: Metadata = {
-    title: "FHCM | Admin Dashboard",
+    title: "FUTA MediaRecords | Admin Dashboard",
     description: "FUTA Health Care Management Systems",
 };
 
