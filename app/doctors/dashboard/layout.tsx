@@ -7,7 +7,7 @@ import { DoctorProtected } from "@/helpers/Protected";
 import DoctorContextProvider from "@/context/DoctorContextProvider";
 
 export const metadata: Metadata = {
-    title: "FUTA MediaRecords | Doctor Dashboard",
+    title: "FUTA MediRecords | Doctor Dashboard",
     description: "FUTA Health Care Management Systems",
 };
 

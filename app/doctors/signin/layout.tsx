@@ -2,7 +2,7 @@ import GlobalFont from "@/components/GlobalFont";
 import "@/styles/globals.css"
 
 export const metadata = {
-    title: "FUTA MediaRecords Doctors | SignIn",
+    title: "FUTA MediRecords Doctors | SignIn",
     description: "FUTA Health Care Management Systems",
 };
 

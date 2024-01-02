@@ -3,7 +3,7 @@ import "@/styles/globals.css";
 import GlobalFont from "@/components/GlobalFont";
 
 export const metadata: Metadata = {
-    title: "FUTA MediaRecords",
+    title: "FUTA MediRecords",
     description: "FUTA Health Care Management Systems",
 };
 
